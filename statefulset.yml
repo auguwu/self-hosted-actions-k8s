@@ -1,0 +1,32 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: github-runner
+  annotations:
+    floofy.dev/pain: "true"
+    floofy.dev/owo: "true"
+  labels:
+    workload.user.cattle.io/workloadselector: apps.statefulset-august-github-runner
+spec:
+  selector:
+    matchLabels:
+      workload.user.cattle.io/workloadselector: apps.statefulset-august-github-runner
+  replicas: 3
+  serviceName: github-runner-headless
+  template:
+    metadata:
+      labels:
+        workload.user.cattle.io/workloadselector: apps.statefulset-august-github-runner
+    spec:
+      containers:
+      - name: runner
+        image: registry.floofy.dev/github/runner:2.290.1
+        env:
+          - name: ORGANIZATION
+            value: Noelware
+          - name: ACCESS_TOKEN
+            value: "<some shit here>"
+          - name: GITHUB_ACTIONS_RUNNER_TLS_NO_VERIFY
+            value: "1"
+      imagePullSecrets:
+      - name: regcred

@@ -5,6 +5,8 @@ This repository is just a documentation of a journey on a question I had, and th
 
 The results may shock you!
 
+I'll probably do this in the future if building Noelware's products or services requires a lot of CPU or Memory Usage on the online hosted instance or if I wanted to do native ARM builds, stay tuned if I build a Helm Chart + Docker Image of them!
+
 ## WARNING
 Please... for the love god don't do this unless you really want to like I wanted to.
 
@@ -62,7 +64,41 @@ Since we aren't actually pushing, we should use the `Workflow Dispatch` event fr
 ![](https://i-am.floof.gay/images/515a5799.png)
 ![](https://i-am.floof.gay/images/c51705e9.png)
 
-back to the drawing board I see!
+back to the drawing board I see! Maybe the dispatch event didn't work, let's pushing to it.
+
+It worked after some tinkering:
+
+```shell
+Current runner version: '2.290.1'
+2022-05-01 04:56:46Z: Listening for Jobs
+2022-05-01 04:58:58Z: Running job: Linting and Unit Tests
+2022-05-01 05:03:16Z: Job Linting and Unit Tests completed with result: Failed
+```
+
+You can view the run [here](https://github.com/Noelware/hazel/actions/runs/2252248421) but after 90 days, the logs will be cleaned out.
+
+Now, it's time for the Kubernetes StatefulSet time!
+
+### Kubernetes
+Now that we know that the Docker image is done, we can ship this to a private registry! For now, you can push this to any registry (if you dare use this which I DO NOT RECOMMEND!), I'll be using my local one: `registry.floofy.dev`
+
+```shell
+/mnt/storage/Projects/Misc/Memes/action-k8s (master*) » docker buildx build . -t registry.floofy.dev/github/runner:2.290.1
+[... stuff here ...]
+
+ => exporting to image 4.9s
+ => => exporting layers 4.8s
+ => => writing image sha256:f0dcaea6eb65f6855497bd92fef7c750806b325075a971fb662f6d68f0595f9 0.0s
+ => => naming to registry.floofy.dev/github/runner:2.290.1   
+```
+
+Now, let's push it and build our [StatefulSet](./statefulset.yml)!
+
+Now, it's successfully pushed on Kubernetes:
+
+![](https://i-am.floof.gay/images/2266aad5.png)
+
+Thanks for coming onto this journey with me, please follow me on GitHub or on Twitter for more cursed shit :)
 
 ## License
 This is going under the unlicensed since I don't think I want to be the blame for wanting to do this.
